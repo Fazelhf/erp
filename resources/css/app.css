@@ -1,0 +1,232 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+:root {
+
+    /* ===== BRAND COLORS ===== */
+    --primary-color: #800020;
+    --primary-dark: #5c0013;
+    --primary-light: #a0002a;
+
+    --secondary-color: #6b7280;
+
+    --success-color: #15803d;
+    --danger-color: #b91c1c;
+    --warning-color: #b45309;
+    --info-color: #0e7490;
+
+    --dark-color: #2b0d12;
+    --light-color: #fdf8f8;
+
+    --border-color: #e7d3d6;
+
+    --text-primary: #2b0d12;
+    --text-secondary: #5b2c33;
+
+    --shadow-sm: 0 1px 2px 0 rgb(128 0 32 / 0.08);
+    --shadow-md: 0 4px 6px -1px rgb(128 0 32 / 0.15), 0 2px 4px -2px rgb(128 0 32 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(128 0 32 / 0.2), 0 4px 6px -4px rgb(128 0 32 / 0.15);
+
+    /* ===== BOOTSTRAP GLOBAL OVERRIDE ===== */
+    --bs-primary: #800020;
+    --bs-primary-rgb: 128, 0, 32;
+    --bs-link-color: #800020;
+    --bs-link-hover-color: #5c0013;
+    --bs-focus-ring-color: rgba(128, 0, 32, 0.25);
+    --bs-pagination-active-bg: #800020;
+    --bs-pagination-active-border-color: #800020;
+}
+
+* {
+    font-family: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
+}
+
+body {
+    direction: rtl;
+    text-align: right;
+    background-color: var(--light-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* ================= RTL FIXES ================= */
+
+[dir="rtl"] .text-start { text-align: right !important; }
+[dir="rtl"] .text-end { text-align: left !important; }
+
+/* ================= NAVBAR ================= */
+
+.navbar {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%) !important;
+    box-shadow: var(--shadow-md);
+}
+
+.navbar-brand,
+.navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.375rem;
+}
+
+.navbar-nav .nav-link.active {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 0.375rem;
+}
+
+/* ================= CARDS ================= */
+
+.card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    background: #ffffff;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 1.25rem 1.5rem;
+}
+
+.card-body { padding: 1.5rem; }
+
+/* ================= BUTTONS ================= */
+
+.btn {
+    border-radius: 0.5rem;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--primary-color);
+    --bs-btn-border-color: var(--primary-color);
+    --bs-btn-hover-bg: var(--primary-dark);
+    --bs-btn-hover-border-color: var(--primary-dark);
+    --bs-btn-active-bg: var(--primary-dark);
+    --bs-btn-active-border-color: var(--primary-dark);
+    --bs-btn-focus-shadow-rgb: 128, 0, 32;
+}
+
+.btn-success { background-color: var(--success-color); border: none; }
+.btn-danger { background-color: var(--danger-color); border: none; }
+.btn-warning { background-color: var(--warning-color); border: none; }
+.btn-info { background-color: var(--info-color); border: none; }
+
+/* ================= TABLE ================= */
+
+.table { background-color: #ffffff; border-radius: 0.5rem; overflow: hidden; }
+.table thead { background-color: var(--light-color); font-weight: 600; }
+.table tbody tr:hover { background-color: #f1f5f9; }
+
+/* ================= FORMS ================= */
+
+.form-control,
+.form-select {
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.625rem 1rem;
+    transition: all 0.3s ease;
+    text-align: right;
+    direction: rtl;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(128, 0, 32, 0.15);
+}
+
+/* ================= ALERTS ================= */
+
+.alert { border: none; border-radius: 0.5rem; padding: 1rem 1.25rem; }
+.alert-success { background-color: #d1fae5; color: #065f46; }
+.alert-danger { background-color: #fee2e2; color: #991b1b; }
+.alert-info { background-color: #cffafe; color: #164e63; }
+.alert-warning { background-color: #fef3c7; color: #92400e; }
+
+/* ================= DROPDOWN ================= */
+
+.dropdown-menu {
+    border: none;
+    box-shadow: var(--shadow-lg);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    text-align: right;
+    --bs-dropdown-link-active-bg: var(--primary-color);
+    --bs-dropdown-link-active-color: #fff;
+}
+
+.dropdown-item {
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+}
+
+.dropdown-item:hover { background-color: var(--light-color); }
+
+/* ================= PAGINATION ================= */
+
+.pagination { justify-content: center; direction: rtl; }
+.page-link {
+    border: 1px solid var(--border-color);
+    color: var(--primary-color);
+    border-radius: 0.5rem;
+    margin: 0 0.25rem;
+}
+
+.page-link:hover {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #ffffff;
+}
+
+/* ================= FOOTER ================= */
+
+footer {
+    background-color: #ffffff;
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+    .container-fluid { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .card { margin-bottom: 1rem; }
+    .navbar-brand { font-size: 1rem; }
+}
+
+/* ================= RTL DATEPICKER ================= */
+
+.jdp-container { direction: rtl; font-family: 'Vazirmatn', 'Tahoma', sans-serif; }
+.jdp-container .jdp-table th,
+.jdp-container .jdp-table td { text-align: center; }
+.jdp-container .jdp-day:hover {
+    background-color: var(--primary-light);
+    color: white;
+}
+.jdp-container .jdp-selected {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}

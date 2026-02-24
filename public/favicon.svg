@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- پس‌زمینه -->
+  <rect width="100" height="100" rx="20" fill="url(#grad1)"/>
+  
+  <!-- آیکون جعبه 3D -->
+  <g transform="translate(25, 25)">
+    <!-- سطح بالایی -->
+    <path d="M 15 10 L 45 10 L 40 5 L 10 5 Z" fill="white" opacity="0.9"/>
+    <!-- سطح جلویی -->
+    <path d="M 10 5 L 40 5 L 40 40 L 10 40 Z" fill="white" opacity="0.95"/>
+    <!-- سطح کناری -->
+    <path d="M 40 5 L 45 10 L 45 45 L 40 40 Z" fill="white" opacity="0.85"/>
+    <!-- خطوط جداکننده -->
+    <line x1="10" y1="20" x2="40" y2="20" stroke="#2563eb" stroke-width="1.5" opacity="0.3"/>
+    <line x1="10" y1="30" x2="40" y2="30" stroke="#2563eb" stroke-width="1.5" opacity="0.3"/>
+  </g>
+  
+  <!-- آیکون چارت کوچک در گوشه -->
+  <g transform="translate(60, 60)">
+    <polyline points="0,8 3,5 6,7 9,3 12,6" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+    <circle cx="0" cy="8" r="1.5" fill="white" opacity="0.8"/>
+    <circle cx="3" cy="5" r="1.5" fill="white" opacity="0.8"/>
+    <circle cx="6" cy="7" r="1.5" fill="white" opacity="0.8"/>
+    <circle cx="9" cy="3" r="1.5" fill="white" opacity="0.8"/>
+    <circle cx="12" cy="6" r="1.5" fill="white" opacity="0.8"/>
+  </g>
+</svg>

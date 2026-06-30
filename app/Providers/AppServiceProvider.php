@@ -1,22 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Pagination\Paginator;
 
+/**
+ * Kept minimal. Business logic and pagination belong in CoreServiceProvider.
+ * Module registration happens via bootstrap/providers.php.
+ */
 class AppServiceProvider extends ServiceProvider
 {
-    public function register(): void
-    {
-        //
-    }
+    public function register(): void {}
 
-    public function boot(): void
-    {
-        Paginator::useBootstrapFive();
-        
-        Paginator::defaultView('pagination::bootstrap-5');
-        Paginator::defaultSimpleView('pagination::simple-bootstrap-5');
-    }
+    public function boot(): void {}
 }

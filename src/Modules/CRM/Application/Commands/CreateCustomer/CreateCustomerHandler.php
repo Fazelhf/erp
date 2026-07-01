@@ -6,10 +6,13 @@ namespace Modules\CRM\Application\Commands\CreateCustomer;
 
 use Modules\CRM\Domain\Customer\Entities\Customer;
 use Modules\CRM\Domain\Customer\Events\CustomerCreatedEvent;
+use Shared\Application\Bus\EventBusInterface;
 use Shared\Domain\Contracts\CommandHandlerInterface;
 
 final class CreateCustomerHandler implements CommandHandlerInterface
 {
+    public function __construct(private readonly EventBusInterface $eventBus) {}
+
     public function handle(object $command): Customer
     {
         /** @var CreateCustomerCommand $command */
@@ -24,7 +27,7 @@ final class CreateCustomerHandler implements CommandHandlerInterface
             'is_active'   => true,
         ]);
 
-        CustomerCreatedEvent::dispatch($customer);
+        $this->eventBus->publish(new CustomerCreatedEvent($customer));
 
         return $customer;
     }

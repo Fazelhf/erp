@@ -6,6 +6,7 @@ namespace Modules\Workflow\Domain\Pipeline\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Shared\Domain\Models\Concerns\HasCompanyScope;
 
 /**
  * Blueprint: defines the steps and transitions for a given process.
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class WorkflowDefinition extends Model
 {
+    use HasCompanyScope;
     protected $fillable = [
         'company_id',
         'name',

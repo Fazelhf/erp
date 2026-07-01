@@ -7,10 +7,11 @@ namespace Modules\Inventory\Domain\Product\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Inventory\Domain\Product\Enums\ProductUnitEnum;
+use Shared\Domain\Models\Concerns\HasCompanyScope;
 
 class Product extends Model
 {
-    use SoftDeletes;
+    use HasCompanyScope, SoftDeletes;
 
     protected $fillable = [
         'company_id',

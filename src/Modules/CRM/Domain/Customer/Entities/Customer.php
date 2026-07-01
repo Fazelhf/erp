@@ -7,10 +7,11 @@ namespace Modules\CRM\Domain\Customer\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\CRM\Domain\Customer\Enums\CustomerTypeEnum;
+use Shared\Domain\Models\Concerns\HasCompanyScope;
 
 class Customer extends Model
 {
-    use SoftDeletes;
+    use HasCompanyScope, SoftDeletes;
 
     protected $fillable = [
         'company_id',

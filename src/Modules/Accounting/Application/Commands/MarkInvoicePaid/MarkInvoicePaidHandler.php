@@ -8,14 +8,17 @@ use Modules\Accounting\Domain\Invoice\Entities\Invoice;
 use Modules\Accounting\Domain\Invoice\Enums\InvoiceStatusEnum;
 use Modules\Accounting\Domain\Invoice\Events\InvoicePaidEvent;
 use Modules\Accounting\Domain\Invoice\Exceptions\InvoiceException;
+use Shared\Application\Bus\EventBusInterface;
 use Shared\Domain\Contracts\CommandHandlerInterface;
 
 final class MarkInvoicePaidHandler implements CommandHandlerInterface
 {
+    public function __construct(private readonly EventBusInterface $eventBus) {}
+
     public function handle(object $command): Invoice
     {
         /** @var MarkInvoicePaidCommand $command */
-        $invoice = Invoice::find($command->invoiceId)
+        $invoice = Invoice::withoutGlobalScopes()->find($command->invoiceId)
             ?? throw InvoiceException::notFound($command->invoiceId);
 
         if ($invoice->isPaid()) {
@@ -23,8 +26,10 @@ final class MarkInvoicePaidHandler implements CommandHandlerInterface
         }
 
         $invoice->update(['status' => InvoiceStatusEnum::Paid]);
-        InvoicePaidEvent::dispatch($invoice->fresh());
+        $invoice = $invoice->fresh();
 
-        return $invoice->fresh();
+        $this->eventBus->publish(new InvoicePaidEvent($invoice));
+
+        return $invoice;
     }
 }

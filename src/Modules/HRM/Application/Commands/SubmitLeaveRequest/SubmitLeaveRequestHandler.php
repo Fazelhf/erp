@@ -6,10 +6,13 @@ namespace Modules\HRM\Application\Commands\SubmitLeaveRequest;
 
 use Modules\HRM\Domain\Leave\Entities\LeaveRequest;
 use Modules\HRM\Domain\Leave\Events\LeaveRequestSubmittedEvent;
+use Shared\Application\Bus\EventBusInterface;
 use Shared\Domain\Contracts\CommandHandlerInterface;
 
 final class SubmitLeaveRequestHandler implements CommandHandlerInterface
 {
+    public function __construct(private readonly EventBusInterface $eventBus) {}
+
     public function handle(object $command): LeaveRequest
     {
         /** @var SubmitLeaveRequestCommand $command */
@@ -24,7 +27,7 @@ final class SubmitLeaveRequestHandler implements CommandHandlerInterface
             'reason'     => $command->reason,
         ]);
 
-        LeaveRequestSubmittedEvent::dispatch($request);
+        $this->eventBus->publish(new LeaveRequestSubmittedEvent($request));
 
         return $request;
     }

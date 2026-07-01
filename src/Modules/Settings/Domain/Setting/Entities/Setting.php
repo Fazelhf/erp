@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Modules\Settings\Domain\Setting\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Shared\Domain\Models\Concerns\HasCompanyScope;
 
 class Setting extends Model
 {
+    use HasCompanyScope;
     protected $fillable = [
         'company_id',
         'group',

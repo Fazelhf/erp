@@ -8,6 +8,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Modules\Audit\Infrastructure\Middleware\AuditApiMiddleware;
+use Modules\IAM\Infrastructure\Middleware\PermissionMiddleware;
 use Shared\Presentation\Http\Middleware\EnsureCompanyAccess;
 use Shared\Presentation\Http\Middleware\LocaleMiddleware;
 use Shared\Presentation\Http\Middleware\SetCompanyContext;
@@ -25,9 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
 
         $middleware->alias([
-            'company'  => EnsureCompanyAccess::class,
-            'locale'   => LocaleMiddleware::class,
-            'audit'    => AuditApiMiddleware::class,
+            'company'    => EnsureCompanyAccess::class,
+            'locale'     => LocaleMiddleware::class,
+            'audit'      => AuditApiMiddleware::class,
+            'permission' => PermissionMiddleware::class,
         ]);
 
     })

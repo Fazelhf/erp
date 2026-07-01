@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Reporting\Domain\Report\Enums\ReportFormatEnum;
 use Modules\Reporting\Domain\Report\Enums\ReportTypeEnum;
+use Shared\Domain\Models\Concerns\HasCompanyScope;
 
 class Report extends Model
 {
-    use SoftDeletes;
+    use HasCompanyScope, SoftDeletes;
 
     protected $fillable = [
         'company_id',

@@ -9,9 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\HRM\Domain\Leave\Enums\LeaveStatusEnum;
 use Modules\HRM\Domain\Leave\Enums\LeaveTypeEnum;
 use Modules\IAM\Domain\User\Entities\User;
+use Shared\Domain\Models\Concerns\HasCompanyScope;
 
 class LeaveRequest extends Model
 {
+    use HasCompanyScope;
     protected $table = 'hr_requests';
 
     protected $fillable = [

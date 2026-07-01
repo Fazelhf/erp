@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Accounting\Domain\Invoice\Enums\InvoiceStatusEnum;
+use Shared\Domain\Models\Concerns\HasCompanyScope;
 
 class Invoice extends Model
 {
-    use SoftDeletes;
+    use HasCompanyScope, SoftDeletes;
 
     protected $fillable = [
         'company_id',

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Workflow\Domain\Pipeline\Enums\WorkflowStatusEnum;
 use Modules\Workflow\Domain\Transition\Entities\WorkflowTransition;
+use Shared\Domain\Models\Concerns\HasCompanyScope;
 
 /**
  * A running instance of a WorkflowDefinition for a specific resource.
@@ -16,6 +17,7 @@ use Modules\Workflow\Domain\Transition\Entities\WorkflowTransition;
  */
 class WorkflowInstance extends Model
 {
+    use HasCompanyScope;
     protected $fillable = [
         'workflow_definition_id',
         'company_id',

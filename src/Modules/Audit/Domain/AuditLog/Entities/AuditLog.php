@@ -6,9 +6,11 @@ namespace Modules\Audit\Domain\AuditLog\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Modules\Audit\Domain\AuditLog\Enums\AuditActionEnum;
+use Shared\Domain\Models\Concerns\HasCompanyScope;
 
 class AuditLog extends Model
 {
+    use HasCompanyScope;
     public const UPDATED_AT = null;
 
     protected $fillable = [

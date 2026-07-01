@@ -10,11 +10,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Modules\IAM\Domain\Role\Entities\Role;
 use Modules\IAM\Domain\User\Enums\UserStatusEnum;
+use Shared\Domain\Models\Concerns\HasCompanyScope;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasCompanyScope, HasFactory, Notifiable;
 
     protected static function newFactory(): Factory
     {
@@ -44,6 +46,18 @@ class User extends Authenticatable
             'password'          => 'hashed',
             'status'            => UserStatusEnum::class,
         ];
+    }
+
+    public function roles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'user_role')
+            ->withPivot(['company_id', 'expires_at'])
+            ->withTimestamps();
+    }
+
+    public function hasPermission(string $slug): bool
+    {
+        return $this->roles->contains(fn (Role $role) => $role->can($slug));
     }
 
     public function isActive(): bool

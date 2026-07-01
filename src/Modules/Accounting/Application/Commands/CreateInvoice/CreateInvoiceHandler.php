@@ -9,11 +9,15 @@ use Modules\Accounting\Domain\Invoice\Entities\Invoice;
 use Modules\Accounting\Domain\Invoice\Entities\InvoiceItem;
 use Modules\Accounting\Domain\Invoice\Events\InvoiceCreatedEvent;
 use Modules\Accounting\Domain\Tax\Services\TaxCalculationService;
+use Shared\Application\Bus\EventBusInterface;
 use Shared\Domain\Contracts\CommandHandlerInterface;
 
 final class CreateInvoiceHandler implements CommandHandlerInterface
 {
-    public function __construct(private readonly TaxCalculationService $taxService) {}
+    public function __construct(
+        private readonly TaxCalculationService $taxService,
+        private readonly EventBusInterface     $eventBus,
+    ) {}
 
     public function handle(object $command): Invoice
     {
@@ -54,7 +58,7 @@ final class CreateInvoiceHandler implements CommandHandlerInterface
                 ]);
             }
 
-            InvoiceCreatedEvent::dispatch($invoice);
+            $this->eventBus->publish(new InvoiceCreatedEvent($invoice));
 
             return $invoice->load('items');
         });
@@ -63,7 +67,8 @@ final class CreateInvoiceHandler implements CommandHandlerInterface
     private function generateNumber(int $companyId): string
     {
         $year  = now()->format('Y');
-        $count = Invoice::where('company_id', $companyId)
+        $count = Invoice::withoutGlobalScopes()
+            ->where('company_id', $companyId)
             ->whereYear('created_at', $year)
             ->count() + 1;
 

@@ -6,23 +6,29 @@ namespace Modules\Workflow\Presentation\Http\Controllers\Api\V1;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Modules\Workflow\Application\Services\WorkflowEngine;
-use Modules\Workflow\Domain\Instance\Entities\WorkflowInstance;
+use Modules\Workflow\Application\Commands\AdvanceWorkflow\AdvanceWorkflowCommand;
+use Modules\Workflow\Application\Commands\StartWorkflow\StartWorkflowCommand;
+use Modules\Workflow\Application\Queries\GetWorkflowInstance\GetWorkflowInstanceQuery;
+use Modules\Workflow\Application\Queries\GetWorkflowInstances\GetWorkflowInstancesQuery;
 use Modules\Workflow\Presentation\Http\Resources\WorkflowInstanceResource;
+use Shared\Application\Bus\CommandBusInterface;
+use Shared\Application\Bus\QueryBusInterface;
 use Shared\Presentation\Http\Controllers\ApiController;
 
 final class WorkflowController extends ApiController
 {
-    public function __construct(private readonly WorkflowEngine $engine) {}
+    public function __construct(
+        private readonly CommandBusInterface $commandBus,
+        private readonly QueryBusInterface   $queryBus,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
-        $instances = WorkflowInstance::query()
-            ->where('company_id', $request->user()->company_id)
-            ->with(['currentStep'])
-            ->when($request->input('status'), fn ($q, $v) => $q->where('status', $v))
-            ->latest()
-            ->paginate($request->integer('per_page', 15));
+        $instances = $this->queryBus->ask(new GetWorkflowInstancesQuery(
+            companyId: $request->user()->company_id,
+            status:    $request->input('status'),
+            perPage:   $request->integer('per_page', 15),
+        ));
 
         return $this->ok(WorkflowInstanceResource::collection($instances)->response()->getData(true));
     }
@@ -36,21 +42,21 @@ final class WorkflowController extends ApiController
             'context'         => ['nullable', 'array'],
         ]);
 
-        $instance = $this->engine->start(
+        $instance = $this->commandBus->dispatch(new StartWorkflowCommand(
             definitionSlug: $data['definition_slug'],
             companyId:      $request->user()->company_id,
             initiatorId:    $request->user()->id,
             subjectType:    $data['subject_type'],
             subjectId:      $data['subject_id'],
             context:        $data['context'] ?? [],
-        );
+        ));
 
         return $this->created(new WorkflowInstanceResource($instance));
     }
 
     public function show(int $id): JsonResponse
     {
-        $instance = WorkflowInstance::with(['currentStep', 'transitions'])->findOrFail($id);
+        $instance = $this->queryBus->ask(new GetWorkflowInstanceQuery($id));
 
         return $this->ok(new WorkflowInstanceResource($instance));
     }
@@ -62,14 +68,12 @@ final class WorkflowController extends ApiController
             'comment'  => ['nullable', 'string'],
         ]);
 
-        $instance = WorkflowInstance::findOrFail($id);
-
-        $instance = $this->engine->advance(
-            instance:  $instance,
-            actorId:   $request->user()->id,
-            decision:  $data['decision'],
-            comment:   $data['comment'] ?? null,
-        );
+        $instance = $this->commandBus->dispatch(new AdvanceWorkflowCommand(
+            instanceId: $id,
+            actorId:    $request->user()->id,
+            decision:   $data['decision'],
+            comment:    $data['comment'] ?? null,
+        ));
 
         return $this->ok(new WorkflowInstanceResource($instance->load(['currentStep', 'transitions'])));
     }

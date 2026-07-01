@@ -21,7 +21,7 @@ Route::middleware('throttle:60,1')->group(function () {
 });
 
 // ── Protected ───────────────────────────────────────────────────────────────
-Route::middleware(['auth:sanctum', 'throttle:api'])
+Route::middleware(['auth:sanctum', 'throttle:api', 'company', 'locale', 'audit'])
     ->group(function () {
         require __DIR__ . '/../src/Modules/IAM/Presentation/Routes/api.php';
         require __DIR__ . '/../src/Modules/Organization/Presentation/Routes/api.php';

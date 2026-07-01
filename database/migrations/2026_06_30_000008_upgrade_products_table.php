@@ -17,7 +17,7 @@ return new class extends Migration
                   ->constrained('companies')
                   ->cascadeOnDelete();
 
-            $table->string('unit')->default('piece')->after('company_id');
+            // 'unit' column already exists in the original products migration
             $table->decimal('cost_price', 15, 2)->default(0)->after('price');
 
             $table->index('company_id');
@@ -28,7 +28,7 @@ return new class extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->dropForeign(['company_id']);
-            $table->dropColumn(['company_id', 'unit', 'cost_price']);
+            $table->dropColumn(['company_id', 'cost_price']);
         });
     }
 };

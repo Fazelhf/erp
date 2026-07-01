@@ -6,6 +6,7 @@ namespace Modules\Accounting\Presentation\Http\Controllers\Api\V1;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\Accounting\Application\Commands\CancelInvoice\CancelInvoiceCommand;
 use Modules\Accounting\Application\Commands\CreateInvoice\CreateInvoiceCommand;
 use Modules\Accounting\Application\Commands\DeleteInvoice\DeleteInvoiceCommand;
 use Modules\Accounting\Application\Commands\MarkInvoicePaid\MarkInvoicePaidCommand;
@@ -77,6 +78,13 @@ final class InvoiceController extends ApiController
         $this->commandBus->dispatch(new MarkInvoicePaidCommand($id));
 
         return $this->ok(null, 'Invoice marked as paid');
+    }
+
+    public function cancel(int $id): JsonResponse
+    {
+        $this->commandBus->dispatch(new CancelInvoiceCommand($id));
+
+        return $this->ok(null, 'Invoice cancelled');
     }
 
     public function destroy(int $id): JsonResponse

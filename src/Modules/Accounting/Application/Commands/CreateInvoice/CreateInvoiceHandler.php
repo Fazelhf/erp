@@ -6,55 +6,66 @@ namespace Modules\Accounting\Application\Commands\CreateInvoice;
 
 use Illuminate\Support\Facades\DB;
 use Modules\Accounting\Domain\Invoice\Entities\Invoice;
+use Modules\Accounting\Domain\Invoice\Entities\InvoiceAggregate;
 use Modules\Accounting\Domain\Invoice\Entities\InvoiceItem;
 use Modules\Accounting\Domain\Invoice\Events\InvoiceCreatedEvent;
-use Modules\Accounting\Domain\Tax\Services\TaxCalculationService;
+use Modules\Accounting\Domain\Invoice\ValueObjects\InvoiceLineItem;
+use Modules\Accounting\Domain\Invoice\ValueObjects\Money;
 use Shared\Application\Bus\EventBusInterface;
 use Shared\Domain\Contracts\CommandHandlerInterface;
 
 final class CreateInvoiceHandler implements CommandHandlerInterface
 {
-    public function __construct(
-        private readonly TaxCalculationService $taxService,
-        private readonly EventBusInterface     $eventBus,
-    ) {}
+    public function __construct(private readonly EventBusInterface $eventBus) {}
 
     public function handle(object $command): Invoice
     {
         /** @var CreateInvoiceCommand $command */
         return DB::transaction(function () use ($command) {
-            $calculatedItems = array_map(
-                fn ($item) => array_merge($item, $this->taxService->calculateItemTotal(
-                    unitPrice: (float) $item['unit_price'],
-                    quantity:  (float) $item['quantity'],
-                    discount:  (float) ($item['discount'] ?? 0),
-                )),
-                $command->items,
+            $invoiceNumber = $this->generateNumber($command->companyId);
+
+            $aggregate = InvoiceAggregate::create(
+                companyId:       $command->companyId,
+                customerId:      $command->customerId,
+                invoiceNumber:   $invoiceNumber,
+                invoiceDiscount: $command->discount,
             );
 
-            $totals = $this->taxService->calculateInvoiceTotals($calculatedItems, $command->discount);
+            foreach ($command->items as $item) {
+                $aggregate->addLineItem(new InvoiceLineItem(
+                    description: $item['description'],
+                    quantity:    (float) $item['quantity'],
+                    unitPrice:   new Money((float) $item['unit_price']),
+                    discount:    new Money((float) ($item['discount'] ?? 0)),
+                    taxRate:     (float) ($item['tax_rate'] ?? 0.09),
+                    productId:   $item['product_id'] ?? null,
+                ));
+            }
 
             $invoice = Invoice::create([
-                'company_id'     => $command->companyId,
-                'customer_id'    => $command->customerId,
-                'invoice_number' => $this->generateNumber($command->companyId),
-                'status'         => 'draft',
+                'company_id'     => $aggregate->companyId(),
+                'customer_id'    => $aggregate->customerId(),
+                'invoice_number' => $aggregate->invoiceNumber(),
+                'status'         => $aggregate->status(),
                 'issue_date'     => $command->issueDate,
                 'due_date'       => $command->dueDate,
                 'notes'          => $command->notes,
-                ...$totals,
+                'subtotal'       => $aggregate->subtotal()->amount,
+                'discount'       => $aggregate->invoiceDiscount(),
+                'tax_amount'     => $aggregate->taxAmount()->amount,
+                'total'          => $aggregate->total()->amount,
             ]);
 
-            foreach ($calculatedItems as $item) {
+            foreach ($aggregate->lineItems() as $lineItem) {
                 InvoiceItem::create([
                     'invoice_id'  => $invoice->id,
-                    'product_id'  => $item['product_id'] ?? null,
-                    'description' => $item['description'],
-                    'quantity'    => $item['quantity'],
-                    'unit_price'  => $item['unit_price'],
-                    'discount'    => $item['discount'] ?? 0,
-                    'tax_rate'    => $item['tax_rate'],
-                    'total'       => $item['total'],
+                    'product_id'  => $lineItem->productId,
+                    'description' => $lineItem->description,
+                    'quantity'    => $lineItem->quantity,
+                    'unit_price'  => $lineItem->unitPrice->amount,
+                    'discount'    => $lineItem->discount->amount,
+                    'tax_rate'    => $lineItem->taxRate,
+                    'total'       => $lineItem->total->amount,
                 ]);
             }
 

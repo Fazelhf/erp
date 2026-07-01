@@ -2,33 +2,33 @@
 
 declare(strict_types=1);
 
-namespace Modules\Accounting\Application\Commands\MarkInvoicePaid;
+namespace Modules\Accounting\Application\Commands\CancelInvoice;
 
 use Modules\Accounting\Domain\Invoice\Entities\Invoice;
 use Modules\Accounting\Domain\Invoice\Entities\InvoiceAggregate;
 use Modules\Accounting\Domain\Invoice\Enums\InvoiceStatusEnum;
-use Modules\Accounting\Domain\Invoice\Events\InvoicePaidEvent;
+use Modules\Accounting\Domain\Invoice\Events\InvoiceCancelledEvent;
 use Modules\Accounting\Domain\Invoice\Exceptions\InvoiceException;
 use Shared\Application\Bus\EventBusInterface;
 use Shared\Domain\Contracts\CommandHandlerInterface;
 
-final class MarkInvoicePaidHandler implements CommandHandlerInterface
+final class CancelInvoiceHandler implements CommandHandlerInterface
 {
     public function __construct(private readonly EventBusInterface $eventBus) {}
 
     public function handle(object $command): Invoice
     {
-        /** @var MarkInvoicePaidCommand $command */
+        /** @var CancelInvoiceCommand $command */
         $invoice = Invoice::withoutGlobalScopes()->with('items')->find($command->invoiceId)
             ?? throw InvoiceException::notFound($command->invoiceId);
 
         $aggregate = InvoiceAggregate::reconstitute($invoice);
-        $aggregate->markPaid();
+        $aggregate->cancel();
 
-        $invoice->update(['status' => InvoiceStatusEnum::Paid]);
+        $invoice->update(['status' => InvoiceStatusEnum::Cancelled]);
         $invoice = $invoice->fresh();
 
-        $this->eventBus->publish(new InvoicePaidEvent($invoice));
+        $this->eventBus->publish(new InvoiceCancelledEvent($invoice));
 
         return $invoice;
     }

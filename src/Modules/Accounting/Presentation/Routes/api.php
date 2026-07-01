@@ -17,6 +17,8 @@ Route::prefix('accounting')->group(function () {
         ->middleware('permission:accounting.invoices.delete');
     Route::post('invoices/{id}/mark-paid', [InvoiceController::class, 'markPaid'])
         ->middleware('permission:accounting.invoices.mark_paid');
+    Route::post('invoices/{id}/cancel', [InvoiceController::class, 'cancel'])
+        ->middleware('permission:accounting.invoices.create');
 
     Route::get('payments', [PaymentController::class, 'index'])
         ->middleware('permission:accounting.payments.view');

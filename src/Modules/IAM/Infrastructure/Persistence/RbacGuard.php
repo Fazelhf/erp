@@ -15,9 +15,11 @@ final class RbacGuard
     {
         return $user->roles()
             ->where('user_role.company_id', $companyId)
-            ->where(function ($q) use ($permission) {
-                $q->whereHas('permissions', fn ($p) => $p->where('slug', $permission));
+            ->where(function ($q): void {
+                $q->whereNull('user_role.expires_at')
+                  ->orWhere('user_role.expires_at', '>', now());
             })
+            ->whereHas('permissions', fn ($p) => $p->where('slug', $permission))
             ->exists();
     }
 

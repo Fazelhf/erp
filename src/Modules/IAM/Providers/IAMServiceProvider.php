@@ -6,6 +6,7 @@ namespace Modules\IAM\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Modules\IAM\Application\Commands\CreateRole\CreateRoleCommand;
+use Modules\IAM\Infrastructure\Persistence\RbacGuard;
 use Modules\IAM\Application\Commands\CreateRole\CreateRoleHandler;
 use Modules\IAM\Application\Commands\CreateUser\CreateUserCommand;
 use Modules\IAM\Application\Commands\CreateUser\CreateUserHandler;
@@ -28,6 +29,11 @@ use Shared\Application\Bus\QueryBusInterface;
 
 class IAMServiceProvider extends ServiceProvider
 {
+    public function register(): void
+    {
+        $this->app->singleton(RbacGuard::class);
+    }
+
     public function boot(): void
     {
         $this->loadRoutesFrom(__DIR__ . '/../Presentation/Routes/web.php');

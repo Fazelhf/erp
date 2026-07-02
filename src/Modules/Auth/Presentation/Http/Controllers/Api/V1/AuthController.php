@@ -25,7 +25,16 @@ final class AuthController extends ApiController
             ], 401);
         }
 
-        $user  = Auth::user();
+        $user = Auth::user();
+
+        if (! $user->isActive()) {
+            Auth::logout();
+            return response()->json([
+                'success' => false,
+                'message' => 'Account is inactive or suspended.',
+            ], 403);
+        }
+
         $token = $user->createToken('api-token')->plainTextToken;
 
         return $this->ok([

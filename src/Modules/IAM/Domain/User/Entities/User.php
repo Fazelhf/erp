@@ -57,7 +57,14 @@ class User extends Authenticatable
 
     public function hasPermission(string $slug): bool
     {
-        return $this->roles->contains(fn (Role $role) => $role->can($slug));
+        return $this->roles()
+            ->where('user_role.company_id', $this->company_id)
+            ->where(function ($q): void {
+                $q->whereNull('user_role.expires_at')
+                  ->orWhere('user_role.expires_at', '>', now());
+            })
+            ->whereHas('permissions', fn ($p) => $p->where('slug', $slug))
+            ->exists();
     }
 
     public function isActive(): bool
